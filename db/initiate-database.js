@@ -1,5 +1,8 @@
 const request = require('request');
 const {MongoClient} = require('mongodb');
+const {mongoose} = require('./mongoose');
+const {User} = require('./../models/user');
+
 
 //Since request is an asynchronous function, wrap it around a callback and wait for request() to fetch data from website.
 var downloadPage = () => {
@@ -21,32 +24,29 @@ var downloadPage = () => {
 var myBackEndLogic = async () => {
   try {
     const data = await downloadPage();
-    MongoClient.connect("mongodb://localhost:27017/UsersApp", {useNewUrlParser: true}, (err, client) => {
-      if (err)
-        return console.log("Error connecting to database server.");
-      var db = client.db("UsersApp");
-      for(var i=0;i<data.length;i++)
-        db.collection("Users").insertOne({
-          id: data[i].id,
-          first_name: data[i].first_name,
-          last_name: data[i].last_name,
-          company_name: data[i].company_name,
-          city: data[i].city,
-          state: data[i].state,
-          zip: data[i].zip,
-          email: data[i].email,
-          web: data[i].web,
-          age: data[i].age
-        }, (err, result) => {
-          if (err)
-            return console.log("Unable to insert user #", i+1);
-          console.log(JSON.stringify(result.ops, undefined, 4));
-        });
-        client.close();
+
+    for(var i=0;i<data.length;i++){
+      var user = new User({
+        id: data[i].id,
+        first_name: data[i].first_name,
+        last_name: data[i].last_name,
+        company_name: data[i].company_name,
+        city: data[i].city,
+        state: data[i].state,
+        zip: data[i].zip,
+        email: data[i].email,
+        web: data[i].web,
+        age: data[i].age
       });
+      user.save().then((doc) => {
+        console.log(doc);
+      }, (err) => {
+        console.log(err);
+      });
+    }
   } catch (err) {
     console.log(err);
   }
 };
 
-myBackEndLogic();
+module.exports = {myBackEndLogic};
