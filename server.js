@@ -18,12 +18,24 @@ var app = express();                                          //Begin our expres
 
 app.use(bodyParser.json());                                   //3rd party middleware to parse the string body into JSON.
 
-app.get("/api/users", (req, res) => {
-  User.find().sort({id: "asc"}).then(docs => {
-    res.status(200).send(docs);
-  }, err => {
-    res.status(400).send(err);
-  });
+app.get("/api/users", async (req, res) => {
+  var queryString = req.query;
+  if (Object.keys(queryString).length === 0)                  //Check if query string for GET /api/users is empty.
+    User.find().sort({id: "asc"}).then(docs => {
+      res.status(200).send(docs);
+    }, err => {
+      res.status(400).send(err);
+    });
+  else {
+    var page = queryString.page, limit = parseInt(queryString.limit), name = queryString.name, sort = queryString.sort;
+    var queryName = {};
+    if (name)
+      queryName = {$or: [{first_name: {$regex: name, $options: 'i'}}, {last_name: {$regex: name, $options: 'i'}}]};
+    User.find(queryName).skip(limit*page).limit(limit).sort(sort).exec((err, docs) => {
+      if (!err)
+        res.status(200).send(docs);
+    });
+  }
 });
 
 app.listen(3000, () => {
