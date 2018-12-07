@@ -53,7 +53,7 @@ app.post("/api/users", (req, res) => {
       age: req.body.age
     });
     user.save().then( doc => {
-      res.status(201).send(doc);
+      res.status(201).send();
     }, err => {
       res.status(400).send(err);
     });
@@ -74,6 +74,14 @@ app.patch("/api/users/:id", (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ["first_name", "last_name", "age"]);
   User.update({id}, {$set: {first_name: body.first_name, last_name: body.last_name, age: body.age}}, {upsert: true}, (err, doc) => {
+    if (!err)
+      res.status(200).send();
+  });
+});
+
+app.delete("/api/users/:id", (req, res) => {
+  var id = req.params.id;
+  User.remove({id}, err => {
     if (!err)
       res.status(200).send();
   });
