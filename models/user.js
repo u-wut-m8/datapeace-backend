@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-var userSchema = new mongoose.Schema({
+var userSchema = new mongoose.Schema({                       //Define Schema for mongoose according to provided data.
   id: Number,
   first_name: String,
   last_name: String,
@@ -13,6 +13,6 @@ var userSchema = new mongoose.Schema({
   age: Number
 });
 
-var User = mongoose.model("Users", userSchema);
+var User = mongoose.model("Users", userSchema);              
 
 module.exports = {User};

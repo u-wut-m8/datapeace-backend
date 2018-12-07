@@ -6,7 +6,7 @@ const {User} = require('./../models/user');
 
 //Since request is an asynchronous function, wrap it around a callback and wait for request() to fetch data from website.
 var downloadPage = () => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {                                     //Return Promise() to be catched by async call.
     request({
       url: "http://demo9197058.mockable.io/users",
       json: true
@@ -25,6 +25,7 @@ var myBackEndLogic = async () => {
   try {
     const data = await downloadPage();
 
+    //Iterate over all records and store in database.
     for(var i=0;i<data.length;i++){
       var user = new User({
         id: data[i].id,

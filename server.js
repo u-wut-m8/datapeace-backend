@@ -28,17 +28,19 @@ app.get("/api/users", (req, res) => {
       res.status(400).send(err);
     });
   else {
+    /*Fetch parameters from the query string.*/
     var page = queryString.page-1, limit = parseInt(queryString.limit), name = queryString.name, sort = queryString.sort;
     var queryName = {};
     if (name)
-      queryName = {$or: [{first_name: {$regex: name, $options: 'i'}}, {last_name: {$regex: name, $options: 'i'}}]};
-    User.find(queryName).skip(limit*page).limit(limit).sort(sort).exec((err, docs) => {
+      queryName = {$or: [{first_name: {$regex: name, $options: 'i'}}, {last_name: {$regex: name, $options: 'i'}}]};      //If name parameter found in first_name or last_name fields.
+    User.find(queryName).skip(limit*page).limit(limit).sort(sort).exec((err, docs) => {                                  //Specify sort, limit and pagination criteria.
       if (!err)
         res.status(200).send(docs);
     });
   }
 });
 
+/*Data needs to be sent to server in JSON format as request payload.*/
 app.post("/api/users", (req, res) => {
     var user = new User({
       id: req.body.id,
@@ -59,7 +61,7 @@ app.post("/api/users", (req, res) => {
     });
 });
 
-app.get("/api/users/:id", (req, res) => {
+app.get("/api/users/:id", (req, res) => {                                       //Get individual record by id parameter.
   var id = req.params.id;
   User.find({id}).then(doc => {
     if (!doc)
@@ -70,7 +72,7 @@ app.get("/api/users/:id", (req, res) => {
   });
 });
 
-app.patch("/api/users/:id", (req, res) => {
+app.patch("/api/users/:id", (req, res) => {                                     //Update first_name, last_name and age fields of record having given id.
   var id = req.params.id;
   var body = _.pick(req.body, ["first_name", "last_name", "age"]);
   User.update({id}, {$set: {first_name: body.first_name, last_name: body.last_name, age: body.age}}, {upsert: true}, (err, doc) => {
@@ -79,7 +81,7 @@ app.patch("/api/users/:id", (req, res) => {
   });
 });
 
-app.delete("/api/users/:id", (req, res) => {
+app.delete("/api/users/:id", (req, res) => {                                    //Remove record having given id.
   var id = req.params.id;
   User.remove({id}, err => {
     if (!err)
@@ -87,6 +89,6 @@ app.delete("/api/users/:id", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
+app.listen(3000, () => {                                                        //Listen on port 3000.
   console.log("Server is running on port 3000.");
 });
