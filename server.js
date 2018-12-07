@@ -18,7 +18,7 @@ var app = express();                                          //Begin our expres
 
 app.use(bodyParser.json());                                   //3rd party middleware to parse the string body into JSON.
 
-app.get("/api/users", async (req, res) => {
+app.get("/api/users", (req, res) => {
   var queryString = req.query;
   if (Object.keys(queryString).length === 0)                  //Check if query string for GET /api/users is empty.
     User.find().sort({id: "asc"}).then(docs => {
@@ -27,7 +27,7 @@ app.get("/api/users", async (req, res) => {
       res.status(400).send(err);
     });
   else {
-    var page = queryString.page, limit = parseInt(queryString.limit), name = queryString.name, sort = queryString.sort;
+    var page = queryString.page-1, limit = parseInt(queryString.limit), name = queryString.name, sort = queryString.sort;
     var queryName = {};
     if (name)
       queryName = {$or: [{first_name: {$regex: name, $options: 'i'}}, {last_name: {$regex: name, $options: 'i'}}]};
@@ -36,6 +36,37 @@ app.get("/api/users", async (req, res) => {
         res.status(200).send(docs);
     });
   }
+});
+
+app.post("/api/users", (req, res) => {
+    var user = new User({
+      id: req.body.id,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      company_name: req.body.company_name,
+      city: req.body.city,
+      state: req.body.state,
+      zip: req.body.zip,
+      email: req.body.email,
+      web: req.body.web,
+      age: req.body.age
+    });
+    user.save().then( doc => {
+      res.status(201).send(doc);
+    }, err => {
+      res.status(400).send(err);
+    });
+});
+
+app.get("/api/users/:id", (req, res) => {
+  var id = req.params.id;
+  User.find({id}).then(doc => {
+    if (!doc)
+      res.status(404).send();
+    res.status(200).send(doc);
+  }, err => {
+    res.status(400).send(err);
+  });
 });
 
 app.listen(3000, () => {
