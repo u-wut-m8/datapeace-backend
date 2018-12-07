@@ -23,3 +23,16 @@
 - Download dependencies using 'npm install'.
 - Run the server through command line using 'node server.js'.
 - Go to [http://localhost:3000](http://localhost:3000) and start testing. :+1:
+
+### Routes
+- [http://localhost:3000/api/users](http://localhost:3000/api/users) : GET request to display all records
+- [http://localhost:3000/api/users?page=X&limit=Y&name=Z&sort=-W](http://localhost:3000/api/users?page=X&limit=Y&name=Z&sort=-W) : GET request to filter records according to query string parameters.
+- [http://localhost:3000/api/users](http://localhost:3000/api/users) : POST request to add record to database; Data needs to be provided in request header in JSON format.
+- [http://localhost:3000/api/users/{id}](http://localhost:3000/api/users/{id}) : GET request to display record having the given id.
+-  [http://localhost:3000/api/users/{id}](http://localhost:3000/api/users/{id}) : PATCH request to update record having the given id; Update data needs to be provided in request header in JSON format.
+- [http://localhost:3000/api/users/{id}](http://localhost:3000/api/users/{id}) : DELETE request to remove record having the given id.
+
+### Notes
+- A count check is done before starting the app in server.js to feed sample data from given website to database. This is done to avoid redundant copies of records during development. It can be modified by tester to meet testing requirements.
+- PATCH is used instead of PUT because we are not concerned with the entire record rather some given fields of a record.
+- MongoDB database folder path was hardcoded during development for convenience and can be changed to suit other testing and deployment environments.
