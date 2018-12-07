@@ -1,5 +1,6 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
 const request = require('request');
 const {MongoClient} = require('mongodb');
 const {myBackEndLogic} = require('./db/initiate-database');
@@ -66,6 +67,15 @@ app.get("/api/users/:id", (req, res) => {
     res.status(200).send(doc);
   }, err => {
     res.status(400).send(err);
+  });
+});
+
+app.patch("/api/users/:id", (req, res) => {
+  var id = req.params.id;
+  var body = _.pick(req.body, ["first_name", "last_name", "age"]);
+  User.update({id}, {$set: {first_name: body.first_name, last_name: body.last_name, age: body.age}}, {upsert: true}, (err, doc) => {
+    if (!err)
+      res.status(200).send();
   });
 });
 
